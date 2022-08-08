@@ -24,24 +24,23 @@ app.get("/", async (req, res) => {
     );
     res.json(photos);
   } catch (error) {
-    console.error(error)
+    console.error(error);
   }
 });
 
 function getOrSetCache (key, cb){
   return new Promise(
     (resolve, reject) => {
-      redis.get(key, 
-        async (err, data) => {
-          if (err) return reject(err);
-          if (data != null ){
-            console.log("Redis Hit!");
-            return resolve(JSON.parse(data));
-          } 
-          console.log("Redis Miss!");
-          const newData = await cb();
-          redis.setex(key, 60, JSON.stringify(newData));
-          resolve(newData);
+      redis.get(key, async (err, data) => {
+        if (err) return reject(err);
+        if (data != null ) {
+          console.log("Redis Hit!");
+          return resolve(JSON.parse(data));
+        } 
+        console.log("Redis Miss!");
+        const newData = await cb();
+        redis.setex(key, 60, JSON.stringify(newData));
+        resolve(newData);
         }
       );
     }
