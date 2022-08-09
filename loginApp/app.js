@@ -1,46 +1,15 @@
-require('dotenv').config();
 const express = require('express');
 const app = express();
-const jwt = require('jsonwebtoken');
+const port = 8080;
+const cookieParser = require('cookie-parser');
 
+require('dotenv').config();
 app.use(express.json());
+app.use(cookieParser());
 
-const posts = [
-  {
-    username: 'Kyle',
-    title: 'Post 1'
-  },
-  {
-    username: 'Luiz',
-    title: 'Post 2'
-  }
-]
+const ROUTE_GET = require('./routes/routeGet');
+const ROUTE_POST = require('./routes/routePost');
 
-app.get('/posts', authenticateToken, (req, res) => {
-  res.json(posts.filter(post => post.username === req.user.name));
-});
+app.use('/', ROUTE_GET, ROUTE_POST);
 
-app.post('/login', (req, res) => {  
-  const username = req.body.username;
-  const user = { name: username };
-  const accessToken = jwt.sign(user, process.env.ACCESS_TOKEN_SECRET);
-
-  res.json({ accessToken: accessToken });
-});
-
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers['authorization'];
-  const token = authHeader.split(' ')[0];
-  if (token == null) return res.sendStatus(401);
-
-  jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, 
-    (err, user) => {
-      if (err) return res.sendStatus(403);
-      req.user = user;
-      next();
-    }
-  )
-}
-
-
-app.listen(8080, console.log('listen to port: ' + 8080));
+app.listen(port, console.log('listen to port: ' + port));
