@@ -1,15 +1,14 @@
+require('dotenv').config();
 const express = require('express');
 const app = express();
-const port = 8080;
 const cookieParser = require('cookie-parser');
+const port = 8080;
 
-require('dotenv').config();
-app.use(express.json());
-app.use(cookieParser());
+app.use(express.json(), cookieParser());
 
-const ROUTE_GET = require('./routes/routeGet');
-const ROUTE_POST = require('./routes/routePost');
+const ROUTE_GET_UNIVERSITY = require('./routes/routeGet');
+const ROUTE_POST_LOGIN = require('./routes/routePost');
 
-app.use('/', ROUTE_GET, ROUTE_POST);
+app.use('/', ROUTE_GET_UNIVERSITY, ROUTE_POST_LOGIN);
 
 app.listen(port, console.log('listen to port: ' + port));

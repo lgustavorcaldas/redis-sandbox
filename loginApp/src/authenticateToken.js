@@ -4,11 +4,11 @@ function authenticateToken(req, res, next) {
   try {
     const { accessToken } = req.cookies;
     if (!accessToken) res.json({ auth: false, message: 'No valid token provided.' }).status(401);
-
     jwt.verify( accessToken.split(' ')[0], process.env.ACCESS_TOKEN_SECRET,
-      (err, user) => {
+      ( err, username ) => {
         if (err) return res.json({ auth: false, message: 'Failed to authenticate token.' }).status(500);
-        req.user = user;
+        //  Adiciona o parametro username no objeto req!!! MUITO FODA
+        req.username = username;
         next();
       }
     );
