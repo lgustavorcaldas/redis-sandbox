@@ -15,7 +15,7 @@ router.post('/login', async (req, res) => {
         const postgresData =  await client.query('SELECT password FROM accounts WHERE username = $1', [username]);
 
         if( !postgresData.rows[0] || !comparePwd(password, postgresData.rows[0].password)) {
-          console.error({ errorMessage: 'Login Failed', attempts_left: connectionData.remainingPoints});
+          console.error({ errorMessage: `Login Failed from host: ${req.socket.remoteAddress}`, attempts_left: connectionData.remainingPoints});
 
           return res.status(400).json({ errorMessage: 'Login Failed', attempts_left: connectionData.remainingPoints});
         } else {
@@ -28,10 +28,10 @@ router.post('/login', async (req, res) => {
       }).catch( (rejectResponse) => {
         // Bloqueado
         const secBeforeNextTry = Math.ceil(rejectResponse.msBeforeNext / 1000) || 1;
-        res.set('Retry-After', String(secBeforeNextTry));
-        console.error({ successMessage: 'Too Many Requests', rejectResponse });
+        res.set('Retry-After', JSON.stringify(secBeforeNextTry));
+        console.error({ errorMessage: `Too many requests from: ${req.socket.remoteAddress}`, rejectResponse });
 
-        return res.status(429).json({ errorMessage: 'Too Many Requests', rejectResponse  });
+        return res.status(429).json({ errorMessage: `Too many requests from: ${req.socket.remoteAddress}`, rejectResponse  });
       });
   } catch (error) {
     console.error({ errorMessage: 'Login error!', error });

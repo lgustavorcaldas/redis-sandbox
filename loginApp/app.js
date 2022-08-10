@@ -2,10 +2,8 @@ require('dotenv').config();
 const express = require('express');
 const app = express();
 const cookieParser = require('cookie-parser');
-const cors = require('cors');
-const port = 3000;
+const port = 8080;
 
-app.use(cors());
 app.use(express.json(), cookieParser());
 
 const ROUTE_GET_UNIVERSITY = require('./routes/routeGet');
