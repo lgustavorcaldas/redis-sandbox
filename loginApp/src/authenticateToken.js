@@ -8,7 +8,7 @@ function authenticateToken(req, res, next) {
 
       return res.json({ auth: false, message: 'No valid token provided.' }).status(401);
     } else {
-      jwt.verify( accessToken.split(' ')[0], process.env.ACCESS_TOKEN_SECRET,
+      jwt.verify( accessToken, process.env.ACCESS_TOKEN_SECRET,
         ( error, username ) => {
           if( error ){
             console.error({ auth: false, message: 'Failed to authenticate token.' });
