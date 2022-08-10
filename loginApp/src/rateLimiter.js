@@ -2,7 +2,7 @@ const Redis = require('ioredis');
 const redis = Redis.createClient();
 const { RateLimiterRedis } = require('rate-limiter-flexible');
 
-module.exports = {
+module.exports= {
   rateLimiter: new RateLimiterRedis({
     redis: redis,
     points: 5, // 5 pontos
