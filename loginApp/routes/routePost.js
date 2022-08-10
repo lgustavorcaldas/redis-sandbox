@@ -1,19 +1,9 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const client =  require('../src/db');
-const Redis = require('ioredis');
-
-const redis = Redis.createClient();
 const router = express.Router();
-
+const { rateLimiter } = require('../src/rateLimiter');
 const { comparePwd } = require('../src/bcrypt');
-const { RateLimiterRedis } = require('rate-limiter-flexible');
-const rateLimiter = new RateLimiterRedis({
-  redis: redis,
-  points: 5, // 5 pontos
-  duration: 15 * 60,
-  blockDuration: 15 * 60,
-});
 
 router.post('/login', async (req, res) => {
   try {
@@ -24,7 +14,7 @@ router.post('/login', async (req, res) => {
         const postgresData =  await client.query('SELECT password FROM accounts WHERE username = $1', [username]);
 
         if( !postgresData.rows[0] || !comparePwd(password, postgresData.rows[0].password)) {
-          console.error({ error: 'Username not found!', attempts_left: connectionData.remainingPoints});
+          console.error({ error: 'Login Failed', attempts_left: connectionData.remainingPoints});
 
           return res.status(400).json({ error: 'Login Failed', attempts_left: connectionData.remainingPoints});
         } else {
@@ -49,4 +39,4 @@ router.post('/login', async (req, res) => {
   }
 });
 
-module.exports = router
+module.exports = router;

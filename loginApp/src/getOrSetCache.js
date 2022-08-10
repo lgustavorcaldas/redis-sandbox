@@ -9,6 +9,7 @@ module.exports = {
         if( error ) return reject(error) && console.error(error);
         if( data != null ) {
           console.log("Redis Hit!");
+          
           return resolve(JSON.parse(data));
         };
   
